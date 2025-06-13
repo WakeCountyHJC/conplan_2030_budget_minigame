@@ -1,0 +1,129 @@
+/* Title/logo font. */
+@font-face {
+    font-family: "Trocchi";
+    src:
+        local("Trocchi"),
+        url("assets/Trocchi-Regular.ttf");
+}
+
+/* Boilerplate stuff. */
+html {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fff;
+    text-color: #000;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: "Noto Sans", "Open Sans", Arial, sans-serif;
+}
+
+p {
+    margin: 0 0 20px 0;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* Modal display stuff. */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-in {
+    from {
+        translate: 0 10vh;
+        opacity: 0;
+    }
+
+    to {
+        translate: 0 0;
+        opacity: 1;
+    }
+}
+
+.modal__bg {
+    background-color: #000;
+    animation: 0.5s 1 normal fade-in;
+    z-index: 2;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+}
+
+.modal {
+    border: 5px solid #aae;
+    margin: 50px;
+    border-radius: 50px;
+    background-color: #ccf;
+    animation: 0.5s 1 normal slide-in;
+    overflow: auto;
+    z-index: 3;
+    padding-left: 50px;
+    padding-right: 50px;
+    font-size: 25px;
+}
+
+.modal__title {
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.modal__title__heading {
+    font-size: 60px;
+    font-family: Trocchi, serif;
+    font-weight: 400;
+    font-style: normal;
+    margin-block: 10px 20px;
+    flex: 1 1 auto;
+}
+
+.modal__close {
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+}
+
+.modal__close__icon {
+    width: 40px;
+    height: 40px;
+}
+
+.modal__org-plug {
+    display: flex;
+}
+
+.modal__org-plug__logo {
+    max-width: 50%;
+}
+
+.modal__org-plug__body {
+    flex: 1 1 auto;
+    margin-left: 2em;
+}
+
+.modal__start-btn {
+    display: block;
+    margin-block: 20px 20px;
+    font-size: 40px;
+    width: 100%;
+    border: none;
+    background-color: #aae;
+    font-family: Trocchi, serif;
+    cursor: pointer;
+}
+
+/* Utility classes. */
+.hidden {
+    display: none;
+}

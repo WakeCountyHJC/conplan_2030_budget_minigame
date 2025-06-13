@@ -1,0 +1,17 @@
+{
+    "bucketLabels": [
+        "Affordable Rental Housing\nCreation And Preservation",
+        "Homeowner Rehabilitations\nAnd Downpayment Assistance",
+        "Public Service Grants\nto Nonprofits",
+        "Homelessness Services",
+        "Other"
+    ],
+    "bucketLabelsShort": [
+        "Affordable\nRental",
+        "Homeowner\nRehab/Assistance",
+        "Nonprofit\nGrants",
+        "Homelessness\nServices",
+        "Other"
+    ],
+    "budgetUpdated": "The budget amount has changed since you've last played. Your past allocations have been proportioned accordingly, but have been rounded down to the nearest whole number."
+}
