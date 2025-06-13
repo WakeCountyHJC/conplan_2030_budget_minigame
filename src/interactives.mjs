@@ -149,8 +149,11 @@ export class Bucket extends Interactive {
             = new Graphics()
                 .rect(0, 0, 320, 4)
                 .fill({color: 0x272d37});
+        this.sliderBar.eventMode = 'static';
+        this.sliderBar.cursor = 'pointer';
+        this.sliderBar.hitArea = new Rectangle(0, -16, 320, 34);
         this.handle = new Graphics()
-            .circle(0, 0, 8)
+            .circle(0, 0, 20)
             .fill({color: 0xffffff});
         this.handle.x
             = this.slider.width
@@ -161,6 +164,10 @@ export class Bucket extends Interactive {
         this.handle.on('pointerdown', this.onSliderDragStart, this);
         this.handle.on('pointerup', this.onSliderDragEnd, this);
         this.handle.on('pointerupoutside', this.onSliderDragEnd, this);
+        this.sliderBar.on('pointerdown', this.onSliderDragStart, this);
+        this.sliderBar.on('pointerup', this.onSliderDragEnd, this);
+        this.sliderBar.on('pointertap', this.onSliderDrag, this);
+        this.sliderBar.on('pointerupoutside', this.onSliderDragEnd, this);
         this.slider.addChild(this.sliderBar);
         this.slider.addChild(this.handle);
         this.popup.addChild(this.slider);
