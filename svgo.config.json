@@ -4,7 +4,8 @@
             "name": "preset-default",
             "params": {
                 "overrides": {
-                    "inlineStyles": false
+                    "inlineStyles": false,
+                    "removeTitle": true
                 }
             }
         }
