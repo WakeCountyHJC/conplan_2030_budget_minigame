@@ -56,6 +56,7 @@ p {
     animation: 0.5s 1 normal fade-in;
     z-index: 2;
     position: fixed;
+    overflow-y: auto;
     width: 100vw;
     height: 100vh;
 }
@@ -105,6 +106,12 @@ p {
 
 .modal__org-plug__logo {
     max-width: 50%;
+    flex: 0 0 auto;
+}
+
+.modal__org-plug__logo__img {
+    width: 100%;
+    height: auto;
 }
 
 .modal__org-plug__body {
