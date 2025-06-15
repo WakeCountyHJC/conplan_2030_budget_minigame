@@ -10,14 +10,13 @@ import {
 import {
     Bucket,
     CashStack,
+    GameSubmissionButton,
     Remainder,
     ScreenshotButton,
+    MultiuserSessionButton,
 } from './interactives.mjs';
-import {
-    NUM_BUCKETS,
-    state,
-    storeGameState,
-} from './state.mjs';
+import {debounce, showModal} from './utilities.mjs';
+import {NUM_BUCKETS, store} from './store.mjs';
 
 
 const wchjcLogoTexturePromise = Assets.load(
@@ -26,19 +25,6 @@ const wchjcLogoTexturePromise = Assets.load(
         import.meta.url
     ).href
 );
-
-function debounce(func, timeout = 300) {
-    let timer;
-    return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(
-            () => {
-                func.apply(this, args);
-            },
-            timeout
-        );
-    };
-}
 
 class Scene {
     constructor() {
@@ -81,10 +67,17 @@ export class GameScene extends Scene {
             this.getRemainderScale(),
         );
 
-        this.screenshotButton = new ScreenshotButton(
-            this.getScreenshotButtonLocation(),
-            this.getScreenshotButtonScale(),
-        );
+        if (store.multiuserMode) {
+            this.endgameButton = new GameSubmissionButton(
+                this.getEndgameButtonLocation(),
+                this.getEndgameButtonScale(),
+            );
+        } else {
+            this.endgameButton = new ScreenshotButton(
+                this.getEndgameButtonLocation(),
+                this.getEndgameButtonScale(),
+            );
+        }
 
         // Fetch WCHJC logo (likely cached) and apply cropping.
         wchjcLogoTexturePromise.then(
@@ -111,32 +104,43 @@ export class GameScene extends Scene {
         for (const cashStack of this.cashStacks) {
             cashStack.attachTo(this.layer);
         }
-        this.screenshotButton.attachTo(this.layer);
+        this.endgameButton.attachTo(this.layer);
+
+        if (store.multiuserMode) {
+            this.multiuserSessionButton = new MultiuserSessionButton(
+                this.getSessionOptionsButtonLocation(),
+                this.getSessionOptionsButtonScale(),
+            );
+            this.multiuserSessionButton.attachTo(this.layer);
+        }
     }
 
     getLogoScale() {
         return 0.6 * Math.min(window.innerHeight, 640) / 640;
     }
 
-    getScreenshotButtonScale() {
+    getEndgameButtonScale() {
         return 1.0;
     }
 
-    getScreenshotButtonLocation() {
+    getEndgameButtonLocation() {
         return [
             window.innerWidth / 2.,
-            window.innerHeight / 3.
+            window.innerHeight / 3.,
         ];
     }
 
     getRemainderScale() {
-        return 1.0;
+        return Math.min(
+            Math.min(window.innerHeight, 700) / 700.,
+            Math.min(window.innerWidth, 800) / 800.,
+        );
     }
 
     getRemainderLocation() {
         return [
             window.innerWidth / 2.,
-            window.innerHeight / 2.
+            window.innerHeight / 2.,
         ];
     }
 
@@ -171,9 +175,25 @@ export class GameScene extends Scene {
         ];
     }
 
+
+    getSessionOptionsButtonLocation() {
+        return [280, 20];
+    }
+
+    getSessionOptionsButtonScale() {
+        return 1.0;
+    }
+
     receiveEvent(eventName, e) {
-        if (eventName === 'dropCash') {
+        switch (eventName) {
+        case 'dropCash':
             this.onDropCash(e);
+            break;
+        case 'pushUserHistory':
+            this.onPushUserHistory();
+            break;
+        default:
+            console.warn(`Unrecognized event ${eventName}.`);
         }
     }
 
@@ -187,11 +207,18 @@ export class GameScene extends Scene {
                     && e.global.x < bounds.x + bounds.width
                     && e.global.y > bounds.y
                     && e.global.y < bounds.y + bounds.height) {
-                state.bucketAlloc[i] += e.denomination;
+                store.state.bucketAlloc[i] += e.denomination;
                 this.update();
                 break;
             }
         }
+    }
+
+    onPushUserHistory() {
+        store.pushUserHistory();
+        this.update();
+        window.alert(appStrings.submissionOK);
+        showModal('about');
     }
 
     reflow() {
@@ -212,12 +239,15 @@ export class GameScene extends Scene {
             this.getRemainderLocation(),
             this.getRemainderScale(),
         );
-        this.screenshotButton.moveTo(
-            this.getScreenshotButtonLocation(),
-            this.getScreenshotButtonScale(),
+        this.endgameButton.moveTo(
+            this.getEndgameButtonLocation(),
+            this.getEndgameButtonScale(),
         );
         if (this.logo) {
             this.logo.scale.set(this.getLogoScale());
+        }
+        if (this.multiuserSessionButton) {
+            this.multiuserSessionButton.update();
         }
     }
 
@@ -229,8 +259,8 @@ export class GameScene extends Scene {
             cashStack.update();
         }
         this.remainder.update();
-        this.screenshotButton.update();
-        debounce(storeGameState)();
+        this.endgameButton.update();
+        debounce(store.storeGameState, store)();
     }
 }
 

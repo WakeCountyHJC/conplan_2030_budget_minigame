@@ -53,9 +53,10 @@ class SceneContainer {
             const dataURI = await this.app.renderer.extract.base64(
                     this.scene.layer
                 ),
-                link = document.createElement('a');
+                link = document.createElement('a'),
+                dateString = (new Date()).toDateString().replaceAll(' ', '_');
             link.href = dataURI;
-            link.download = 'screenshot.png';
+            link.download = `screenshot_${dateString}.png`;
             link.click();
             this.app.start();
         }
