@@ -1,10 +1,12 @@
 'use strict';
 
 import {
+    Assets,
     Container,
     GraphicsContext,
     Graphics,
     Rectangle,
+    Sprite,
     Text,
 } from 'pixi.js';
 
@@ -28,7 +30,13 @@ const {app} = sceneContainer,
     gearGraphicContext = new GraphicsContext().svg(gearSVG),
     bucketGraphicContext = new GraphicsContext().svg(bucketSVG),
     screenshotGraphicContext = new GraphicsContext().svg(screenshotSVG),
-    submitGraphicContext = new GraphicsContext().svg(submitSVG);
+    submitGraphicContext = new GraphicsContext().svg(submitSVG),
+    wchjcLogoTexturePromise = Assets.load(
+        new URL(
+            'assets/wchjc_logo_orig.jpg',
+            import.meta.url
+        ).href
+    );
 
 class Interactive {
     constructor ([x, y], scale) {
@@ -442,9 +450,15 @@ export class ScreenshotButton extends CommonEndgameButton {
     constructor([x, y], scale) {
         super([x, y], scale);
         this.button.on('pointertap', async () => {
+            const dateString = (new Date())
+                    .toDateString()
+                    .replaceAll(' ', '_'),
+                baseFilename = `con_plan_2030_${dateString}`;
             this.graphic.visible = false;
-            await sceneContainer.takeScreenshot();
+            sceneContainer.sendEvent('beforeScreenshot');
+            await sceneContainer.takeScreenshot(baseFilename);
             this.graphic.visible = true;
+            sceneContainer.sendEvent('afterScreenshot');
         });
         this.update();
     }
@@ -503,6 +517,33 @@ export class MultiuserSessionButton extends Interactive {
         this.graphic.on('pointertap', (e) => {
             showModal('session');
         });
+    }
+}
+
+export class WCHJCLogo extends Interactive {
+    constructor([x, y], scale) {
+        super([x, y], scale);
+        // Fetch WCHJC logo (likely cached) and apply cropping.
+        wchjcLogoTexturePromise.then(
+            (texture) => {
+                this.logo = new Sprite(texture);
+                this.mask = new Graphics().rect(25, 100, 280, 200).fill(0);
+                this.graphic.addChild(this.logo);
+                this.graphic.addChild(this.mask);
+                this.logo.mask = this.mask;
+                this.graphic.pivot.set(25, 100);
+            }
+        );
+    }
+
+    uncrop() {
+        this.logo.mask = null;
+        this.graphic.removeChild(this.mask);
+    }
+
+    crop() {
+        this.logo.mask = this.mask;
+        this.graphic.addChild(this.mask);
     }
 }
 

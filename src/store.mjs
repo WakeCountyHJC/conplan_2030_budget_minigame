@@ -5,7 +5,6 @@ import appStrings from './app_strings.json';
 
 export const CONSOLIDATED_BUDGET = 32e6;
 export const NUM_BUCKETS = 5;
-export const CITY_ALLOC = Array(NUM_BUCKETS).fill(0);
 
 class Store {
     constructor() {

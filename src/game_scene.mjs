@@ -1,10 +1,9 @@
 'use strict';
 
 import {
-    Assets,
     Container,
     Graphics,
-    Sprite,
+    Text,
 } from 'pixi.js';
 
 import {
@@ -14,17 +13,13 @@ import {
     Remainder,
     ScreenshotButton,
     MultiuserSessionButton,
+    WCHJCLogo,
 } from './interactives.mjs';
 import {debounce, showModal} from './utilities.mjs';
 import {NUM_BUCKETS, store} from './store.mjs';
 
+import appStrings from './app_strings.json';
 
-const wchjcLogoTexturePromise = Assets.load(
-    new URL(
-        'assets/wchjc_logo_orig.jpg',
-        import.meta.url
-    ).href
-);
 
 class Scene {
     constructor() {
@@ -59,7 +54,7 @@ export class GameScene extends Scene {
             new CashStack('$10M', 1e7, this.getCashLocation(0), cashScale),
             new CashStack('$5M', 5e6, this.getCashLocation(1), cashScale),
             new CashStack('$1M', 1e6, this.getCashLocation(2), cashScale),
-            new CashStack('$100K', 1e5, this.getCashLocation(3), cashScale)
+            new CashStack('$100K', 1e5, this.getCashLocation(3), cashScale),
         ];
 
         this.remainder = new Remainder(
@@ -79,22 +74,9 @@ export class GameScene extends Scene {
             );
         }
 
-        // Fetch WCHJC logo (likely cached) and apply cropping.
-        wchjcLogoTexturePromise.then(
-            (texture) => {
-                const mask = new Graphics().rect(25, 100, 280, 200).fill(0),
-                    sprite = new Sprite(texture);
-
-                this.logo = new Container();
-                this.logo.addChild(sprite);
-                this.logo.addChild(mask);
-                sprite.mask = mask;
-                this.logo.pivot.set(25, 100);
-                this.logo.position.set(0, 0);
-                this.logo.scale.set(this.getLogoScale());
-
-                this.layer.addChild(this.logo);
-            }
+        this.logo = new WCHJCLogo(
+            this.getLogoPosition(),
+            this.getLogoScale(),
         );
 
         this.remainder.attachTo(this.layer);
@@ -113,6 +95,12 @@ export class GameScene extends Scene {
             );
             this.multiuserSessionButton.attachTo(this.layer);
         }
+
+        this.logo.attachTo(this.layer);
+    }
+
+    getLogoPosition() {
+        return [0, 0];
     }
 
     getLogoScale() {
@@ -175,7 +163,6 @@ export class GameScene extends Scene {
         ];
     }
 
-
     getSessionOptionsButtonLocation() {
         return [280, 20];
     }
@@ -191,6 +178,12 @@ export class GameScene extends Scene {
             break;
         case 'pushUserHistory':
             this.onPushUserHistory();
+            break;
+        case 'beforeScreenshot':
+            this.onBeforeScreenshot();
+            break;
+        case 'afterScreenshot':
+            this.onAfterScreensot();
             break;
         default:
             console.warn(`Unrecognized event ${eventName}.`);
@@ -221,6 +214,61 @@ export class GameScene extends Scene {
         showModal('about');
     }
 
+    /**
+     * Adds and rearranges layer content temporarily for a better screenshot.
+     */
+    onBeforeScreenshot() {
+        this.logo.uncrop();
+        const logoBounds = this.logo.graphic.getLocalBounds();
+        this.logo.graphic.pivot.set(
+            logoBounds.width / 2,
+            logoBounds.height - 150,
+        );
+        this.logo.moveTo(
+            this.getRemainderLocation(),
+            this.getRemainderScale(),
+        )
+        this.tempCaption = new Text({
+            text: appStrings.screenshotTitle,
+            style: {
+                fill: '#000000',
+                fontSize: '36px',
+                align: 'center',
+                fontWeight: 'bold',
+            },
+            position: {
+                x: window.innerWidth / 2,
+                y: window.innerHeight + 20,
+            },
+            anchor: 0.5,
+        });
+        this.layer.addChildAt(this.tempCaption, 0);
+        const bounds = this.layer.getLocalBounds();
+        this.tempRectangle = new Graphics().rect(
+            bounds.minX - 20,
+            bounds.minY - 20,
+            bounds.width + 40,
+            bounds.height + 40,
+        ).fill(0x9999ff);
+        this.remainder.graphic.visible = false;
+        this.layer.addChildAt(this.tempRectangle, 0);
+    }
+
+    /**
+     * Cleans up the work of onBeforeScreenshot() after a screenshot has been
+     * taken.
+     */
+    onAfterScreensot() {
+        this.logo.crop();
+        this.logo.graphic.pivot.set(25, 100);
+        this.remainder.graphic.visible = true;
+        this.layer.removeChild(this.tempRectangle);
+        this.layer.removeChild(this.tempCaption);
+        delete this.tempRectangle;
+        delete this.tempCaption;
+        this.reflow();
+    }
+
     reflow() {
         let i;
         for (i = 0; i < this.buckets.length; i += 1) {
@@ -243,9 +291,10 @@ export class GameScene extends Scene {
             this.getEndgameButtonLocation(),
             this.getEndgameButtonScale(),
         );
-        if (this.logo) {
-            this.logo.scale.set(this.getLogoScale());
-        }
+        this.logo.moveTo(
+            this.getLogoPosition(),
+            this.getLogoScale(),
+        );
         if (this.multiuserSessionButton) {
             this.multiuserSessionButton.update();
         }
