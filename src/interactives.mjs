@@ -19,21 +19,33 @@ import appStrings from './app_strings.json';
 import bucketSVG from 'bundle-text:./assets/bucket.svg';
 import cashSVG from 'bundle-text:./assets/cash.svg';
 import cashStackSVG from 'bundle-text:./assets/cash_stack.svg';
-import gearSVG from 'bundle-text:./assets/gear.svg';
-import screenshotSVG from 'bundle-text:./assets/screenshot.svg';
-import submitSVG from 'bundle-text:./assets/submit.svg';
 
 
 const {app} = sceneContainer,
     cashGraphicContext = new GraphicsContext().svg(cashSVG),
     cashStackGraphicContext = new GraphicsContext().svg(cashStackSVG),
-    gearGraphicContext = new GraphicsContext().svg(gearSVG),
     bucketGraphicContext = new GraphicsContext().svg(bucketSVG),
-    screenshotGraphicContext = new GraphicsContext().svg(screenshotSVG),
-    submitGraphicContext = new GraphicsContext().svg(submitSVG),
     wchjcLogoTexturePromise = Assets.load(
         new URL(
             'assets/wchjc_logo_orig.jpg',
+            import.meta.url
+        ).href
+    ),
+    screenshotIconTexturePromise = Assets.load(
+        new URL(
+            'assets/screenshot.svg',
+            import.meta.url
+        ).href
+    ),
+    submitIconTexturePromise = Assets.load(
+        new URL(
+            'assets/submit.svg',
+            import.meta.url
+        ).href
+    ),
+    gearIconTexturePromise = Assets.load(
+        new URL(
+            'assets/gear.svg',
             import.meta.url
         ).href
     );
@@ -397,45 +409,47 @@ export class CommonEndgameButton extends Interactive {
 
     constructor([x, y], scale) {
         super([x, y], scale);
+        this.button = new Container();
+        this.graphic.addChild(this.button);
 
         // Icon component.
-        const icon = this.makeIcon();
-        const iconBounds = icon.getLocalBounds();
-        icon.pivot.set(
-            iconBounds.width / 2,
-            iconBounds.height / 2,
-        );
+        this.makeIcon().then(
+            (icon) => {
+                const iconBounds = icon.getLocalBounds();
+                icon.pivot.set(
+                    iconBounds.width / 2,
+                    iconBounds.height / 2,
+                );
 
-        // Assemble the full button.
-        this.button = new Container();
-        this.button.addChild(icon);
-        this.button.addChild(new Text({
-            text: this.constructor.label,
-            style: {
-                fill: '#000000',
-                fontSize: '25px',
-                align: 'right',
-            },
-            position: {
-                x: 0,
-                y: 60,
-            },
-            anchor: 0.5,
-        }));
-        this.button.eventMode = 'static';
-        this.button.cursor = 'pointer';
-        const bounds = this.button.getLocalBounds();
-        this.button.hitArea = new Rectangle(
-            bounds.minX,
-            bounds.minY,
-            bounds.width,
-            bounds.height,
+                // Assemble the full button.
+                this.button.addChild(icon);
+                this.button.addChild(new Text({
+                    text: this.constructor.label,
+                    style: {
+                        fill: '#000000',
+                        fontSize: '25px',
+                        align: 'right',
+                    },
+                    position: {
+                        x: 0,
+                        y: 60,
+                    },
+                    anchor: 0.5,
+                }));
+                this.button.eventMode = 'static';
+                this.button.cursor = 'pointer';
+                const bounds = this.button.getLocalBounds();
+                this.button.hitArea = new Rectangle(
+                    bounds.minX,
+                    bounds.minY,
+                    bounds.width,
+                    bounds.height,
+                );
+            }
         );
-
-        this.graphic.addChild(this.button);
     }
 
-    makeIcon() {
+    async makeIcon() {
         throw 'Child must override makeIcon() method.';
     }
 
@@ -463,8 +477,8 @@ export class ScreenshotButton extends CommonEndgameButton {
         this.update();
     }
 
-    makeIcon() {
-        return new Graphics(screenshotGraphicContext);
+    async makeIcon() {
+        return new Sprite(await screenshotIconTexturePromise);
     }
 }
 
@@ -479,51 +493,55 @@ export class GameSubmissionButton extends CommonEndgameButton {
         this.update();
     }
 
-    makeIcon() {
-        return new Graphics(submitGraphicContext);
+    async makeIcon() {
+        return new Sprite(await submitIconTexturePromise);
     }
 }
 
 export class MultiuserSessionButton extends Interactive {
     constructor([x, y], scale) {
         super([x, y], scale);
-        const icon = new Graphics(gearGraphicContext),
-            iconBounds = icon.getLocalBounds();
-        icon.pivot.set(iconBounds.width / 2, 0);
 
-        this.graphic.addChild(icon);
-        this.graphic.addChild(new Text({
-            text: 'Session Options',
-            style: {
-                fill: '#000000',
-                fontSize: '25px',
-                align: 'center',
-            },
-            position: {
-                x: 0,
-                y: 70,
-            },
-            anchor: 0.5,
-        }));
-        this.graphic.eventMode = 'static';
-        this.graphic.cursor = 'pointer';
-        const bounds = this.graphic.getLocalBounds();
-        this.graphic.hitArea = new Rectangle(
-            bounds.minX,
-            bounds.minY,
-            bounds.width,
-            bounds.height,
+        gearIconTexturePromise.then(
+            (texture) => {
+                const icon = new Sprite(texture),
+                    iconBounds = icon.getLocalBounds();
+                icon.pivot.set(iconBounds.width / 2, 0);
+
+                this.graphic.addChild(icon);
+                this.graphic.addChild(new Text({
+                    text: 'Session Options',
+                    style: {
+                        fill: '#000000',
+                        fontSize: '25px',
+                        align: 'center',
+                    },
+                    position: {
+                        x: 0,
+                        y: 70,
+                    },
+                    anchor: 0.5,
+                }));
+                this.graphic.eventMode = 'static';
+                this.graphic.cursor = 'pointer';
+                const bounds = this.graphic.getLocalBounds();
+                this.graphic.hitArea = new Rectangle(
+                    bounds.minX,
+                    bounds.minY,
+                    bounds.width,
+                    bounds.height,
+                );
+                this.graphic.on('pointertap', (e) => {
+                    showModal('session');
+                });
+            }
         );
-        this.graphic.on('pointertap', (e) => {
-            showModal('session');
-        });
     }
 }
 
 export class WCHJCLogo extends Interactive {
     constructor([x, y], scale) {
         super([x, y], scale);
-        // Fetch WCHJC logo (likely cached) and apply cropping.
         wchjcLogoTexturePromise.then(
             (texture) => {
                 this.logo = new Sprite(texture);
