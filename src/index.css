@@ -143,6 +143,11 @@ p {
     background-color: #ddd;
 }
 
+.modal__link {
+    color: #0000ee;
+    text-decoration: underline;
+}
+
 @media(max-width: 700px) {
     .modal__title__heading {
         font-size: 32px;
