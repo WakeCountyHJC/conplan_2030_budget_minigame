@@ -15,7 +15,11 @@ import {
     MultiuserSessionButton,
     WCHJCLogo,
 } from './interactives.mjs';
-import {debounce, showModal} from './utilities.mjs';
+import {
+    debounce,
+    distPointsOnEllipticalArc,
+    showModal,
+} from './utilities.mjs';
 import {NUM_BUCKETS, store} from './store.mjs';
 
 import appStrings from './app_strings.json';
@@ -39,14 +43,15 @@ export class GameScene extends Scene {
     constructor() {
         super();
         const cashScale = this.getCashScale(),
-            bucketScale = this.getBucketScale();
+            bucketScale = this.getBucketsScale(),
+            bucketLocations = this.getBucketsLocations();
 
         this.buckets = [];
-        for (let i = 0; i < NUM_BUCKETS; i += 1) {
+        for (let i = 0; i < bucketLocations.length; i += 1) {
             this.buckets.push(new Bucket(
                 i,
-                this.getBucketLocation(i),
-                bucketScale
+                bucketLocations[i],
+                bucketScale,
             ));
         }
 
@@ -132,21 +137,23 @@ export class GameScene extends Scene {
         ];
     }
 
-    getBucketScale(index) {
+    getBucketsScale() {
         return Math.min(
             Math.min(window.innerWidth, 940) / 940.,
             Math.min(window.innerHeight, 940) / 940.,
         );
     }
 
-    getBucketLocation(index) {
-        const centerY = window.innerHeight / 3,
-            angle = -Math.PI * (1.125 + 3. * index / 16),
-            yRadius = window.innerHeight / 2.;
-        return [
-            window.innerWidth * 0.1 + window.innerWidth * 0.8 * index / 4,
-            centerY + yRadius * Math.sin(angle)
-        ];
+    getBucketsLocations() {
+        return distPointsOnEllipticalArc(
+            NUM_BUCKETS,
+            window.innerWidth * 0.425,
+            window.innerHeight / 2.,
+            window.innerWidth / 2.,
+            window.innerHeight / 3.,
+            -Math.PI * 1.125,
+            -Math.PI * 1.875,
+        );
     }
 
     getCashScale(index) {
@@ -271,10 +278,12 @@ export class GameScene extends Scene {
 
     reflow() {
         let i;
+        const bucketScale = this.getBucketsScale(),
+            bucketLocations = this.getBucketsLocations();
         for (i = 0; i < this.buckets.length; i += 1) {
             this.buckets[i].moveTo(
-                this.getBucketLocation(i),
-                this.getBucketScale(i),
+                bucketLocations[i],
+                bucketScale,
             );
         }
         for (i = 0; i < this.cashStacks.length; i += 1) {
