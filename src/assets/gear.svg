@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="40"
-   height="40"
-   viewBox="0 0 40 40"
+   width="50"
+   height="50"
+   viewBox="0 0 50 50"
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   sodipodi:docname="close.svg"
+   sodipodi:docname="gear.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +17,7 @@
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:dc="http://purl.org/dc/elements/1.1/">
   <title
-     id="title1">Close Button</title>
+     id="title2">Gear Icon</title>
   <sodipodi:namedview
      id="namedview1"
      pagecolor="#505050"
@@ -29,9 +29,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="26.183951"
-     inkscape:cx="19.133858"
-     inkscape:cy="15.524777"
+     inkscape:zoom="22.627417"
+     inkscape:cx="21.522563"
+     inkscape:cy="20.749165"
      inkscape:window-width="3814"
      inkscape:window-height="2036"
      inkscape:window-x="2"
@@ -60,28 +60,22 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:#121e2a;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linejoin:round;stroke-dasharray:none;stroke-linecap:round"
-       d="M 3,3 37,37"
        id="path1"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:#121e2a;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
-       d="M 37,3 3,37"
-       id="path2"
-       sodipodi:nodetypes="cc" />
+       style="stroke-width:3.571;stroke-linecap:round;stroke-linejoin:round;fill:#000000;stroke:none;stroke-dasharray:none"
+       d="M 21.428571,0 V 3.9039249 A 21.428571,21.428571 0 0 0 17.557199,4.9641927 L 15.592448,1.5625 9.4075524,5.1339285 11.358352,8.5123703 A 21.428571,21.428571 0 0 0 8.5123703,11.358352 L 5.1339285,9.4075524 1.5625,15.592448 4.9641927,17.557199 A 21.428571,21.428571 0 0 0 3.9039249,21.428571 H 0 v 7.142858 h 3.9039249 a 21.428571,21.428571 0 0 0 1.0602678,3.871372 L 1.5625,34.407552 l 3.5714285,6.184896 3.3784418,-1.9508 a 21.428571,21.428571 0 0 0 2.8459817,2.845982 l -1.9507996,3.378442 6.1848956,3.571428 1.964751,-3.401692 a 21.428571,21.428571 0 0 0 3.871372,1.060266 V 50 h 7.142858 v -3.903926 a 21.428571,21.428571 0 0 0 3.871372,-1.060266 l 1.964751,3.401692 6.184896,-3.571428 -1.9508,-3.378442 a 21.428571,21.428571 0 0 0 2.845982,-2.845982 l 3.378442,1.9508 3.571428,-6.184896 -3.401692,-1.964751 a 21.428571,21.428571 0 0 0 1.060266,-3.871372 H 50 v -7.142858 h -3.878347 a 21.428571,21.428571 0 0 0 -1.041666,-3.89695 L 48.4375,15.592448 44.866072,9.4075524 41.510882,11.344401 A 21.428571,21.428571 0 0 0 38.655599,8.4891179 L 40.592448,5.1339285 34.407552,1.5625 32.468379,4.9200149 A 21.428571,21.428571 0 0 0 28.571429,3.8783483 V 0 Z M 25,13.095239 A 11.904761,11.904761 0 0 1 36.904761,25 11.904761,11.904761 0 0 1 25,36.904761 11.904761,11.904761 0 0 1 13.095239,25 11.904761,11.904761 0 0 1 25,13.095239 Z" />
   </g>
   <metadata
      id="metadata1">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
-        <dc:title>Close Button</dc:title>
-        <dc:date>2025-05-25</dc:date>
+        <dc:date>2025-06-15</dc:date>
         <dc:creator>
           <cc:Agent>
             <dc:title>Wake County Housing Justice Coalition</dc:title>
           </cc:Agent>
         </dc:creator>
+        <dc:title>Gear Icon</dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

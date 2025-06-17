@@ -1,31 +1,42 @@
 'use strict';
 
 import {
+    Assets,
     Container,
     GraphicsContext,
     Graphics,
     Rectangle,
+    Sprite,
     Text,
 } from 'pixi.js';
+
 import sceneContainer from './scene_container.mjs';
-import {
-    state,
-    selectRemainingCash,
-} from './state.mjs';
+import store from './store.mjs';
+import {showModal} from './utilities.mjs';
 
 import appStrings from './app_strings.json';
 
 import bucketSVG from 'bundle-text:./assets/bucket.svg';
 import cashSVG from 'bundle-text:./assets/cash.svg';
 import cashStackSVG from 'bundle-text:./assets/cash_stack.svg';
+import gearSVG from 'bundle-text:./assets/gear.svg';
 import screenshotSVG from 'bundle-text:./assets/screenshot.svg';
+import submitSVG from 'bundle-text:./assets/submit.svg';
 
 
-const app = sceneContainer.app,
+const {app} = sceneContainer,
     cashGraphicContext = new GraphicsContext().svg(cashSVG),
     cashStackGraphicContext = new GraphicsContext().svg(cashStackSVG),
+    gearGraphicContext = new GraphicsContext().svg(gearSVG),
     bucketGraphicContext = new GraphicsContext().svg(bucketSVG),
-    screenshotGraphicContext = new GraphicsContext().svg(screenshotSVG);
+    screenshotGraphicContext = new GraphicsContext().svg(screenshotSVG),
+    submitGraphicContext = new GraphicsContext().svg(submitSVG),
+    wchjcLogoTexturePromise = Assets.load(
+        new URL(
+            'assets/wchjc_logo_orig.jpg',
+            import.meta.url
+        ).href
+    );
 
 class Interactive {
     constructor ([x, y], scale) {
@@ -157,7 +168,7 @@ export class Bucket extends Interactive {
             .fill({color: 0xffffff});
         this.handle.x
             = this.slider.width
-                * state.bucketAlloc[this.idx] / state.budget;
+                * store.state.bucketAlloc[this.idx] / store.state.budget;
         this.handle.y = this.slider.height / 2;
         this.handle.eventMode = 'static';
         this.handle.cursor = 'pointer';
@@ -197,10 +208,11 @@ export class Bucket extends Interactive {
                 Math.min(e.global.y, window.innerHeight - height / 2)
             ),
         });
-        this.maxValue = selectRemainingCash() + state.bucketAlloc[this.idx];
+        this.maxValue = store.selectRemainingCash()
+            + store.state.bucketAlloc[this.idx];
         this.handle.x
             = this.sliderBar.width
-                * state.bucketAlloc[this.idx] / this.maxValue;
+                * store.state.bucketAlloc[this.idx] / this.maxValue;
         // We make this a closure rather than a method so that it is uniquely
         // detachable.
         const hideBucketMenu = (e) => {
@@ -230,7 +242,7 @@ export class Bucket extends Interactive {
                 sliderWidth
             )
         );
-        state.bucketAlloc[this.idx]
+        store.state.bucketAlloc[this.idx]
             = Math.round(
                 this.handle.x / sliderWidth * this.maxValue / 100000
             ) * 100000;
@@ -242,7 +254,7 @@ export class Bucket extends Interactive {
     }
 
     formatAmount() {
-        return `$${state.bucketAlloc[this.idx].toLocaleString()}`;
+        return `$${store.state.bucketAlloc[this.idx].toLocaleString()}`;
     }
 
     update() {
@@ -328,7 +340,7 @@ export class CashStack extends Interactive {
     }
 
     setStackState() {
-        const remainder = selectRemainingCash(),
+        const remainder = store.selectRemainingCash(),
             billsLeft = Math.floor(remainder / this.denomination);
         this.graphic.removeChildren();
         if (billsLeft > 1) {
@@ -368,7 +380,7 @@ export class Remainder extends Interactive {
     }
 
     formatText() {
-        const remainder = selectRemainingCash();
+        const remainder = store.selectRemainingCash();
         if (remainder === 0) {
             return 'All Funds Allocated';
         }
@@ -380,12 +392,15 @@ export class Remainder extends Interactive {
     }
 }
 
-export class ScreenshotButton extends Interactive {
+export class CommonEndgameButton extends Interactive {
+    static label = '';
+
     constructor([x, y], scale) {
         super([x, y], scale);
-        // Screenshot camera icon.
-        const icon = new Graphics(screenshotGraphicContext),
-            iconBounds = icon.getLocalBounds();
+
+        // Icon component.
+        const icon = this.makeIcon();
+        const iconBounds = icon.getLocalBounds();
         icon.pivot.set(
             iconBounds.width / 2,
             iconBounds.height / 2,
@@ -395,7 +410,7 @@ export class ScreenshotButton extends Interactive {
         this.button = new Container();
         this.button.addChild(icon);
         this.button.addChild(new Text({
-            text: 'Screenshot',
+            text: this.constructor.label,
             style: {
                 fill: '#000000',
                 fontSize: '25px',
@@ -409,11 +424,6 @@ export class ScreenshotButton extends Interactive {
         }));
         this.button.eventMode = 'static';
         this.button.cursor = 'pointer';
-        this.button.on('pointertap', async () => {
-            this.graphic.visible = false;
-            await sceneContainer.takeScreenshot();
-            this.graphic.visible = true;
-        });
         const bounds = this.button.getLocalBounds();
         this.button.hitArea = new Rectangle(
             bounds.minX,
@@ -421,12 +431,119 @@ export class ScreenshotButton extends Interactive {
             bounds.width,
             bounds.height,
         );
+
         this.graphic.addChild(this.button);
-        this.update();
+    }
+
+    makeIcon() {
+        throw 'Child must override makeIcon() method.';
     }
 
     update() {
-        this.graphic.visible = (selectRemainingCash() === 0);
+        this.graphic.visible = (store.selectRemainingCash() === 0);
+    }
+}
+
+export class ScreenshotButton extends CommonEndgameButton {
+    static label = 'Screenshot';
+
+    constructor([x, y], scale) {
+        super([x, y], scale);
+        this.button.on('pointertap', async () => {
+            const dateString = (new Date())
+                    .toDateString()
+                    .replaceAll(' ', '_'),
+                baseFilename = `con_plan_2030_${dateString}`;
+            this.graphic.visible = false;
+            sceneContainer.sendEvent('beforeScreenshot');
+            await sceneContainer.takeScreenshot(baseFilename);
+            this.graphic.visible = true;
+            sceneContainer.sendEvent('afterScreenshot');
+        });
+        this.update();
+    }
+
+    makeIcon() {
+        return new Graphics(screenshotGraphicContext);
+    }
+}
+
+export class GameSubmissionButton extends CommonEndgameButton {
+    static label = 'Submit';
+
+    constructor([x, y], scale) {
+        super([x, y], scale);
+        this.button.on('pointertap', (e) => {
+            sceneContainer.sendEvent('pushUserHistory', e);
+        });
+        this.update();
+    }
+
+    makeIcon() {
+        return new Graphics(submitGraphicContext);
+    }
+}
+
+export class MultiuserSessionButton extends Interactive {
+    constructor([x, y], scale) {
+        super([x, y], scale);
+        const icon = new Graphics(gearGraphicContext),
+            iconBounds = icon.getLocalBounds();
+        icon.pivot.set(iconBounds.width / 2, 0);
+
+        this.graphic.addChild(icon);
+        this.graphic.addChild(new Text({
+            text: 'Session Options',
+            style: {
+                fill: '#000000',
+                fontSize: '25px',
+                align: 'center',
+            },
+            position: {
+                x: 0,
+                y: 70,
+            },
+            anchor: 0.5,
+        }));
+        this.graphic.eventMode = 'static';
+        this.graphic.cursor = 'pointer';
+        const bounds = this.graphic.getLocalBounds();
+        this.graphic.hitArea = new Rectangle(
+            bounds.minX,
+            bounds.minY,
+            bounds.width,
+            bounds.height,
+        );
+        this.graphic.on('pointertap', (e) => {
+            showModal('session');
+        });
+    }
+}
+
+export class WCHJCLogo extends Interactive {
+    constructor([x, y], scale) {
+        super([x, y], scale);
+        // Fetch WCHJC logo (likely cached) and apply cropping.
+        wchjcLogoTexturePromise.then(
+            (texture) => {
+                this.logo = new Sprite(texture);
+                this.mask = new Graphics().rect(25, 100, 280, 200).fill(0);
+                this.graphic.addChild(this.logo);
+                this.graphic.addChild(this.mask);
+                this.logo.mask = this.mask;
+                this.graphic.pivot.set(25, 100);
+            }
+        );
+    }
+
+    uncrop() {
+        this.logo.mask = null;
+        this.graphic.removeChild(this.mask);
+    }
+
+    crop() {
+        this.logo.mask = this.mask;
+        this.graphic.addChild(this.mask);
     }
 }
 

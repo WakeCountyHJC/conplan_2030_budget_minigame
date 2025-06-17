@@ -47,7 +47,7 @@ class SceneContainer {
         }
     }
 
-    async takeScreenshot() {
+    async takeScreenshot(baseFilename = 'screenshot') {
         if (this.scene) {
             this.app.stop();
             const dataURI = await this.app.renderer.extract.base64(
@@ -55,7 +55,7 @@ class SceneContainer {
                 ),
                 link = document.createElement('a');
             link.href = dataURI;
-            link.download = 'screenshot.png';
+            link.download = `${baseFilename}.png`;
             link.click();
             this.app.start();
         }
