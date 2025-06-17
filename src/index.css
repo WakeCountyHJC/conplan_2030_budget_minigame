@@ -105,22 +105,18 @@ p {
 }
 
 .modal__org-plug {
-    display: flex;
+    margin-bottom: 20px;
 }
 
 .modal__org-plug__logo {
     max-width: 50%;
-    flex: 0 0 auto;
+    float: left;
+    margin: 0 2em 20px 0;
 }
 
 .modal__org-plug__logo__img {
     width: 100%;
     height: auto;
-}
-
-.modal__org-plug__body {
-    flex: 1 1 auto;
-    margin-left: 2em;
 }
 
 .modal__start-btn {
