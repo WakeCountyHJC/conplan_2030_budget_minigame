@@ -1,7 +1,7 @@
 {
     "name": "conplan_2030_budget_minigame",
     "version": "1.1.1",
-    "description": "Participatory Budgeting Minigame for Raleigh's Consolidated Plan, 2025-2030",
+    "description": "Participatory Budgeting Minigame for Raleigh's Consolidated Plan, 2026-2030",
     "scripts": {
         "start": "parcel src/index.html",
         "clean": "shx rm -rf dist/* .parcel-cache/*",
