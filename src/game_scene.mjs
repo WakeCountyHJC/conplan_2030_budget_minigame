@@ -9,10 +9,10 @@ import {
 import {
     Bucket,
     CashStack,
+    CancelSessionButton,
     GameSubmissionButton,
     Remainder,
     ScreenshotButton,
-    MultiuserSessionButton,
     WCHJCLogo,
 } from './interactives.mjs';
 import {
@@ -94,11 +94,11 @@ export class GameScene extends Scene {
         this.endgameButton.attachTo(this.layer);
 
         if (store.multiuserMode) {
-            this.multiuserSessionButton = new MultiuserSessionButton(
-                this.getSessionOptionsButtonLocation(),
-                this.getSessionOptionsButtonScale(),
+            this.multiuserSessionCancelButton = new CancelSessionButton(
+                this.getCancelSessionButtonLocation(),
+                this.getCancelSessionButtonScale(),
             );
-            this.multiuserSessionButton.attachTo(this.layer);
+            this.multiuserSessionCancelButton.attachTo(this.layer);
         }
 
         this.logo.attachTo(this.layer);
@@ -170,11 +170,11 @@ export class GameScene extends Scene {
         ];
     }
 
-    getSessionOptionsButtonLocation() {
+    getCancelSessionButtonLocation() {
         return [280, 20];
     }
 
-    getSessionOptionsButtonScale() {
+    getCancelSessionButtonScale() {
         return 1.0;
     }
 
@@ -185,6 +185,9 @@ export class GameScene extends Scene {
             break;
         case 'pushUserHistory':
             this.onPushUserHistory();
+            break;
+        case 'cancelUserSession':
+            this.onCancelUserSession();
             break;
         case 'beforeScreenshot':
             this.onBeforeScreenshot();
@@ -216,9 +219,16 @@ export class GameScene extends Scene {
 
     onPushUserHistory() {
         store.pushUserHistory();
+        store.clearUserProgress();
         this.update();
         window.alert(appStrings.submissionOK);
-        showModal('about');
+        showModal('multiuser');
+    }
+
+    onCancelUserSession() {
+        store.clearUserProgress();
+        this.update();
+        showModal('multiuser');
     }
 
     /**
@@ -231,6 +241,7 @@ export class GameScene extends Scene {
             logoBounds.width / 2,
             logoBounds.height - 150,
         );
+        // Position the logo like we did the cash remainder display.
         this.logo.moveTo(
             this.getRemainderLocation(),
             this.getRemainderScale(),
@@ -304,8 +315,11 @@ export class GameScene extends Scene {
             this.getLogoPosition(),
             this.getLogoScale(),
         );
-        if (this.multiuserSessionButton) {
-            this.multiuserSessionButton.update();
+        if (this.multiuserSessionCancelButton) {
+            this.multiuserSessionCancelButton.moveTo(
+                this.getCancelSessionButtonLocation(),
+                this.getCancelSessionButtonScale(),
+            );
         }
     }
 

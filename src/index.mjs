@@ -22,6 +22,7 @@ function init() {
 
     aboutModal.removeAttribute('style');
     sessionModal.removeAttribute('style');
+    document.getElementById('multiuser-modal').removeAttribute('style');
 
     for (const closeBtn of
             document.getElementsByClassName(`about-modal-close`)) {
@@ -66,13 +67,42 @@ function init() {
         (e) => {
             if (!store.initialized) {
                 store.initialize(true);
+                store.clearUserProgress();
                 sceneContainer.setScene(GameScene);
                 sceneContainer.updateScene();
-                e.currentTarget.textContent = appStrings.multiuserModeWarning;
-                e.currentTarget.disabled = true;
-                e.currentTarget.classList.add('modal__start-btn--disabled');
             }
+            e.currentTarget.disabled = true;
+            e.currentTarget.classList.add('modal__start-btn--disabled');
             hideModal('about');
+            showModal('multiuser');
+        }
+    );
+    document.getElementById('multiuser-session-init').addEventListener(
+        'submit',
+        (e) => {
+            const form = e.currentTarget;
+            if (form.reportValidity()) {
+                for (const el of form.elements) {
+                    if (el.name === 'city') {
+                        store.state.currUser.cityOrRegion = el.value;
+                    } else if (el.name === 'zip') {
+                        store.state.currUser.zipCode = el.value;
+                    }
+                }
+                hideModal('multiuser');
+                form.reset();
+            }
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    );
+    document.getElementById('session-options-modal-btn').addEventListener(
+        'click',
+        () => {
+            // This follows the multiuser modal in the DOM tree, so we
+            // can be lazy and safely open and close it on top of the multiuser
+            // modal, despite the shared z-index.
+            showModal('session');
         }
     );
     document.getElementById('session-csv-export').addEventListener(

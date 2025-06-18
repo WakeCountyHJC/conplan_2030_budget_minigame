@@ -43,9 +43,9 @@ const {app} = sceneContainer,
             import.meta.url
         ).href
     ),
-    gearIconTexturePromise = Assets.load(
+    cancelIconTexturePromise = Assets.load(
         new URL(
-            'assets/gear.svg',
+            'assets/cancel.svg',
             import.meta.url
         ).href
     );
@@ -498,11 +498,10 @@ export class GameSubmissionButton extends CommonEndgameButton {
     }
 }
 
-export class MultiuserSessionButton extends Interactive {
+export class CancelSessionButton extends Interactive {
     constructor([x, y], scale) {
         super([x, y], scale);
-
-        gearIconTexturePromise.then(
+        cancelIconTexturePromise.then(
             (texture) => {
                 const icon = new Sprite(texture),
                     iconBounds = icon.getLocalBounds();
@@ -510,7 +509,7 @@ export class MultiuserSessionButton extends Interactive {
 
                 this.graphic.addChild(icon);
                 this.graphic.addChild(new Text({
-                    text: 'Session Options',
+                    text: 'Cancel Session',
                     style: {
                         fill: '#000000',
                         fontSize: '25px',
@@ -532,7 +531,7 @@ export class MultiuserSessionButton extends Interactive {
                     bounds.height,
                 );
                 this.graphic.on('pointertap', (e) => {
-                    showModal('session');
+                    sceneContainer.sendEvent('cancelUserSession');
                 });
             }
         );
