@@ -25,30 +25,39 @@ const {app} = sceneContainer,
     cashGraphicContext = new GraphicsContext().svg(cashSVG),
     cashStackGraphicContext = new GraphicsContext().svg(cashStackSVG),
     bucketGraphicContext = new GraphicsContext().svg(bucketSVG),
+    textureDPIOptions = {
+        resolution: window.devicePixelRatio,
+        resourceOptions: {
+            scale: window.devicePixelRatio
+        },
+    },
     wchjcLogoTexturePromise = Assets.load(
         new URL(
             'assets/wchjc_logo_orig.jpg',
             import.meta.url
         ).href
     ),
-    screenshotIconTexturePromise = Assets.load(
-        new URL(
+    screenshotIconTexturePromise = Assets.load({
+        src: new URL(
             'assets/screenshot.svg',
             import.meta.url
-        ).href
-    ),
-    submitIconTexturePromise = Assets.load(
-        new URL(
+        ).href,
+        data: textureDPIOptions,
+    }),
+    submitIconTexturePromise = Assets.load({
+        src: new URL(
             'assets/submit.svg',
             import.meta.url
-        ).href
-    ),
-    cancelIconTexturePromise = Assets.load(
-        new URL(
+        ).href,
+        data: textureDPIOptions,
+    }),
+    cancelIconTexturePromise = Assets.load({
+        src: new URL(
             'assets/cancel.svg',
             import.meta.url
-        ).href
-    );
+        ).href,
+        data: textureDPIOptions,
+    });
 
 class Interactive {
     constructor ([x, y], scale) {
@@ -103,8 +112,8 @@ export class Bucket extends Interactive {
             position: {
                 x: 0,
                 y: 20
-            }
-        })
+            },
+        });
         this.labelText = new Text({
             text: appStrings.bucketLabelsShort[this.idx],
             style: {
@@ -150,8 +159,8 @@ export class Bucket extends Interactive {
             position: {
                 x: popupBounds.width / 2,
                 y: 50
-            }
-        })
+            },
+        });
         this.popupAmountText = new Text({
             text: this.formatAmount(),
             style: {
@@ -163,7 +172,7 @@ export class Bucket extends Interactive {
             position: {
                 x: popupBounds.width / 2,
                 y: 150
-            }
+            },
         });
 
         // Build money slider.
@@ -209,7 +218,13 @@ export class Bucket extends Interactive {
 
     showBucketMenu(e) {
         app.stage.addChild(this.popup);
-        const {width, height} = this.popup.getLocalBounds();
+        this.popup.scale.set(
+            Math.min(
+                Math.min(500, window.innerWidth) / 500,
+                Math.min(400, window.innerHeight) / 500,
+            )
+        );
+        const {width, height} = this.popup.getBounds();
         this.popup.position.copyFrom({
             x: Math.max(
                 width / 2,
