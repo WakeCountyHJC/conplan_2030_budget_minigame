@@ -409,7 +409,7 @@ export class Remainder extends Interactive {
     formatText() {
         const remainder = store.selectRemainingCash();
         if (remainder === 0) {
-            return 'All Funds Allocated';
+            return appStrings.allCashAllocated;
         }
         return `$${remainder.toLocaleString()}`;
     }
