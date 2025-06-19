@@ -113,7 +113,7 @@ export class GameScene extends Scene {
     }
 
     getEndgameButtonScale() {
-        return 1.0;
+        return Math.min(window.innerHeight, 600) / 600.;
     }
 
     getEndgameButtonLocation() {
@@ -148,7 +148,7 @@ export class GameScene extends Scene {
         return distPointsOnEllipticalArc(
             NUM_BUCKETS,
             window.innerWidth * 0.425,
-            window.innerHeight / 2.,
+            window.innerHeight / 2.1,
             window.innerWidth / 2.,
             window.innerHeight / 3.,
             -Math.PI * 1.125,
