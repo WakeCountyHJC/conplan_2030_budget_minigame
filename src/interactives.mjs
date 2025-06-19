@@ -25,30 +25,39 @@ const {app} = sceneContainer,
     cashGraphicContext = new GraphicsContext().svg(cashSVG),
     cashStackGraphicContext = new GraphicsContext().svg(cashStackSVG),
     bucketGraphicContext = new GraphicsContext().svg(bucketSVG),
+    textureDPIOptions = {
+        resolution: window.devicePixelRatio,
+        resourceOptions: {
+            scale: window.devicePixelRatio
+        },
+    },
     wchjcLogoTexturePromise = Assets.load(
         new URL(
             'assets/wchjc_logo_orig.jpg',
             import.meta.url
         ).href
     ),
-    screenshotIconTexturePromise = Assets.load(
-        new URL(
+    screenshotIconTexturePromise = Assets.load({
+        src: new URL(
             'assets/screenshot.svg',
             import.meta.url
-        ).href
-    ),
-    submitIconTexturePromise = Assets.load(
-        new URL(
+        ).href,
+        data: textureDPIOptions,
+    }),
+    submitIconTexturePromise = Assets.load({
+        src: new URL(
             'assets/submit.svg',
             import.meta.url
-        ).href
-    ),
-    gearIconTexturePromise = Assets.load(
-        new URL(
-            'assets/gear.svg',
+        ).href,
+        data: textureDPIOptions,
+    }),
+    cancelIconTexturePromise = Assets.load({
+        src: new URL(
+            'assets/cancel.svg',
             import.meta.url
-        ).href
-    );
+        ).href,
+        data: textureDPIOptions,
+    });
 
 class Interactive {
     constructor ([x, y], scale) {
@@ -94,24 +103,24 @@ export class Bucket extends Interactive {
                 fill: '#000000',
                 stroke: {
                     color: '#ffffff',
-                    width: 2,
+                    width: 8,
                 },
                 align: 'center',
-                fontSize: '24px',
+                fontSize: '32px',
             },
             anchor: 0.5,
             position: {
                 x: 0,
                 y: 20
-            }
-        })
+            },
+        });
         this.labelText = new Text({
             text: appStrings.bucketLabelsShort[this.idx],
             style: {
                 fill: '#000000',
                 fontWeight: 'bold',
                 align: 'center',
-                fontSize: '24px',
+                fontSize: '32px',
             },
             anchor: 0.5,
             position: {
@@ -150,8 +159,8 @@ export class Bucket extends Interactive {
             position: {
                 x: popupBounds.width / 2,
                 y: 50
-            }
-        })
+            },
+        });
         this.popupAmountText = new Text({
             text: this.formatAmount(),
             style: {
@@ -163,7 +172,7 @@ export class Bucket extends Interactive {
             position: {
                 x: popupBounds.width / 2,
                 y: 150
-            }
+            },
         });
 
         // Build money slider.
@@ -209,7 +218,13 @@ export class Bucket extends Interactive {
 
     showBucketMenu(e) {
         app.stage.addChild(this.popup);
-        const {width, height} = this.popup.getLocalBounds();
+        this.popup.scale.set(
+            Math.min(
+                Math.min(500, window.innerWidth) / 500,
+                Math.min(400, window.innerHeight) / 500,
+            )
+        );
+        const {width, height} = this.popup.getBounds();
         this.popup.position.copyFrom({
             x: Math.max(
                 width / 2,
@@ -394,7 +409,7 @@ export class Remainder extends Interactive {
     formatText() {
         const remainder = store.selectRemainingCash();
         if (remainder === 0) {
-            return 'All Funds Allocated';
+            return appStrings.allCashAllocated;
         }
         return `$${remainder.toLocaleString()}`;
     }
@@ -498,11 +513,10 @@ export class GameSubmissionButton extends CommonEndgameButton {
     }
 }
 
-export class MultiuserSessionButton extends Interactive {
+export class CancelSessionButton extends Interactive {
     constructor([x, y], scale) {
         super([x, y], scale);
-
-        gearIconTexturePromise.then(
+        cancelIconTexturePromise.then(
             (texture) => {
                 const icon = new Sprite(texture),
                     iconBounds = icon.getLocalBounds();
@@ -510,7 +524,7 @@ export class MultiuserSessionButton extends Interactive {
 
                 this.graphic.addChild(icon);
                 this.graphic.addChild(new Text({
-                    text: 'Session Options',
+                    text: 'Cancel\nSession',
                     style: {
                         fill: '#000000',
                         fontSize: '25px',
@@ -532,8 +546,9 @@ export class MultiuserSessionButton extends Interactive {
                     bounds.height,
                 );
                 this.graphic.on('pointertap', (e) => {
-                    showModal('session');
+                    sceneContainer.sendEvent('cancelUserSession');
                 });
+                this.graphic.pivot.set(-iconBounds.width / 2, 0);
             }
         );
     }

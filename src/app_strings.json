@@ -14,8 +14,8 @@
         "Other"
     ],
     "budgetUpdated": "The budget amount has changed since you've last played. Your past allocations have been proportioned accordingly, but have been rounded down to the nearest whole number.",
+    "allCashAllocated": "All Funds Allocated",
     "sessionClearConfirm": "Are you sure you want to clear user history?",
     "submissionOK": "Your choices have been recorded. Thank you!",
-    "multiuserModeWarning": "Data collection mode is active. (To escape, simply reload this page.)",
     "screenshotTitle": "Proposed Consolidated Plan for Housing\n2026-30\nRaleigh, NC"
 }

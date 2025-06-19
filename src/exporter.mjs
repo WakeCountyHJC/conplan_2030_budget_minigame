@@ -5,14 +5,17 @@ import store from './store.mjs';
 import appStrings from './app_strings.json';
 
 
+const LABELS = [
+    'City or Region',
+    'ZIP Code',
+    ...appStrings.bucketLabels.map((el) => el.replaceAll('\n', ' '))
+];
+
 export function exportUserHistoryToCSVDataURI() {
     const {userHistory} = store.state,
         rows = [
             'data:text/csv;charset=utf-8,'
-                + appStrings.bucketLabels.map(
-                    (element) =>
-                        `"${element.replaceAll('\n', ' ')}"`
-                ).join(','),
+                + LABELS.map((element) => `"${element}"`).join(','),
         ];
 
     for (const row of userHistory) {
@@ -24,12 +27,9 @@ export function exportUserHistoryToCSVDataURI() {
 
 export function exportUserHistoryToJSONDataURI() {
     const {userHistory} = store.state,
-        labels = appStrings.bucketLabels.map(
-            (label) => label.replaceAll('\n', ' ')
-        ),
         zippedUserHistory = userHistory.map((row) =>
             Object.fromEntries(
-                labels.map((label, i) =>
+                LABELS.map((label, i) =>
                     [label, row[i]]
                 )
             )

@@ -13,7 +13,7 @@ html {
 
 body {
     background-color: #fff;
-    text-color: #000;
+    color: #000;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -53,16 +53,6 @@ p {
     }
 }
 
-.modal__bg {
-    background-color: #000;
-    animation: 0.5s 1 normal fade-in;
-    z-index: 2;
-    position: fixed;
-    overflow-y: auto;
-    width: 100vw;
-    height: 100vh;
-}
-
 .modal {
     border: 5px solid #aae;
     margin: 50px;
@@ -73,6 +63,16 @@ p {
     z-index: 3;
     padding: 0 50px 0 50px;
     font-size: 25px;
+}
+
+.modal__bg {
+    background-color: #000;
+    animation: 0.5s 1 normal fade-in;
+    z-index: 2;
+    position: fixed;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
 }
 
 .modal__title {
@@ -130,6 +130,7 @@ p {
     background-color: #aae;
     font-family: Trocchi, serif;
     cursor: pointer;
+    color: #000;
 }
 
 .modal__start-btn--smaller {
@@ -146,6 +147,37 @@ p {
     text-decoration: underline;
 }
 
+.modal__field-row {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.modal__field-row__label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.modal__field-row__widget {
+    display: block;
+    width: 100%;
+    background-color: #fff;
+    font-size: 1.5em;
+    border: 2px solid #aae;
+    border-radius: 10px;
+    padding: 0.2em 0.4em 0.2em 0.4em;
+}
+
+.modal__divider {
+    border: 1px solid #aae;
+    margin-block: 30px;
+}
+
+.modal__application-notice {
+    font-style: italic;
+    clear: both;
+}
+
 @media(max-width: 700px) {
     .modal__title__heading {
         font-size: 32px;
@@ -155,7 +187,6 @@ p {
         width: 40px;
         height: 40px;
     }
-
 
     .modal {
         font-size: 16px;

@@ -11,7 +11,7 @@ class Store {
         this.state = {
             budget: CONSOLIDATED_BUDGET,
             bucketAlloc: Array(NUM_BUCKETS).fill(0),
-            version: '0',
+            version: '0.1',
         };
         this.initialized = false;
     }
@@ -21,6 +21,10 @@ class Store {
         // Add a history table exclusive to multiuser mode.
         if (this.multiuserMode) {
             this.state.userHistory = [];
+            this.state.currUser = {
+                zipCode: '',
+                cityOrRegion: '',
+            };
         }
         this.hydrateGameState();
         this.initialized = true;
@@ -54,14 +58,26 @@ class Store {
                 this.state.bucketAlloc = source.bucketAlloc;
             }
             if (this.multiuserMode) {
-                this.state.userHistory = source.userHistory;
+                if (source.version === '0') {
+                    this.state.userHistory = source.userHistory.map(
+                        // Prefix two new columns to user history.
+                        (row) => ['', '', ...row]
+                    )
+                } else {
+                    this.state.userHistory = source.userHistory;
+                    this.state.currUser = source.currUser;
+                }
             }
         }
     }
 
     pushUserHistory() {
         if (this.multiuserMode) {
-            this.state.userHistory.push(this.state.bucketAlloc);
+            this.state.userHistory.push([
+                this.state.currUser.cityOrRegion,
+                this.state.currUser.zipCode,
+                ...this.state.bucketAlloc
+            ]);
             this.resetBuckets();
         } else {
             console.error(
@@ -72,6 +88,14 @@ class Store {
 
     clearUserHistory() {
         this.state.userHistory = [];
+    }
+
+    clearUserProgress() {
+        this.resetBuckets();
+        if (this.multiuserMode) {
+            this.state.currUser.cityOrRegion = '';
+            this.state.currUser.zipCode = '';
+        }
     }
 
     resetBuckets() {

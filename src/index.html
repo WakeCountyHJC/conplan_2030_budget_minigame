@@ -4,6 +4,7 @@
         <title>Design Your Own Housing Consolidated Plan</title>
         <link rel="stylesheet" href="./index.css">
         <script type="module" src="./index.mjs" defer></script>
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
     </head>
 
     <body>
@@ -23,7 +24,7 @@
                     </button>
                 </header>
                 <p>In this game, you can describe how you would distribute the funds allocated by the
-                    City of Raleigh to the 2026-2030 Consolidated Plan. We
+                    City of Raleigh to the 2026&ndash;2030 Consolidated Plan. We
                     present the five funding &#8220;buckets&#8221; defined from their literature and
                     challenge you to find a fair allocation of funds among them.</p>
                 <div class="modal__org-plug">
@@ -58,6 +59,75 @@
                 </button>
             </article>
         </div>
+        <div id="multiuser-modal" class="modal__bg hidden"
+            style="display:none">
+            <article class="modal">
+                <header class="modal__title">
+                    <h1 class="modal__title__heading">
+                        Participatory Budgeting: Raleigh's Consolidated Plan
+                        2026&ndash;2030
+                    </h1>
+                </header>
+                <p>In this game, you can describe how you would distribute the funds allocated by the
+                    City of Raleigh to the 2026&ndash;2030 Consolidated Plan. We
+                    present the five funding &#8220;buckets&#8221; defined from their literature and
+                    challenge you to find a fair allocation of funds among them.</p>
+                <form id="multiuser-session-init">
+                    <p>For surveying purposes, please enter your location of
+                        residence to begin. (We won't ask for further personal
+                        information.)</p>
+                    <div class="modal__field-row">
+                        <label for="input-city"
+                            class="modal__field-row__label">
+                            City or Region
+                        </label>
+                        <input type="text" name="city" id="input-city"
+                            class="modal__field-row__widget" required>
+                    </div>
+                    <div class="modal__field-row">
+                        <label for="input-zip"
+                            class="modal__field-row__label">
+                            ZIP Code
+                        </label>
+                        <input type="text" name="zip" id="input-zip"
+                            class="modal__field-row__widget" required>
+                    </div>
+                    <button type="submit" class="modal__start-btn">
+                        Start
+                    </button>
+                </form>
+                <hr class="modal__divider">
+                <div class="modal__org-plug">
+                    <div class="modal__org-plug__logo">
+                        <img class="modal__org-plug__logo__img"
+                            src="./assets/wchjc_logo_orig.jpg"
+                            alt="Wake County Housing Justice Coalition Logo">
+                    </div>
+                    <section class="modal__org-plug__body">
+                        <p>We believe that residents have the right to
+                            participate in the budgeting decisions made by
+                            their municipality. If you are interested in our
+                            work, we would love to hear from you and keep you
+                            in touch with coming campaigns and events.</p>
+                        <p>
+                            <a href="https://forms.gle/f9itV8tkgfeF1f9G9"
+                                class="modal__link" target="_blank">
+                                Simply fill out this brief form</a> if
+                            you'd like to join our mailing list.
+                        </p>
+                    </section>
+                </div>
+                <p class="modal__application-notice">
+                    Multiuser mode is active. To exit, please reload this
+                    page.
+                </p>
+                <button type="button" class="modal__start-btn
+                    modal__start-btn--smaller"
+                    id="session-options-modal-btn">
+                    Session Options
+                </button>
+            </article>
+        </div>
         <div id="session-modal" class="modal__bg hidden" style="display:none">
             <article class="modal">
                 <header class="modal__title">
@@ -65,7 +135,8 @@
                         Session Options
                     </h1>
                     <button type="button" class="modal__title__close session-modal-close">
-                        <img class="modal__title__close__icon" src="assets/close.svg"
+                        <img class="modal__title__close__icon"
+                            src="assets/close.svg"
                             alt="Close">
                     </button>
                 </header>
