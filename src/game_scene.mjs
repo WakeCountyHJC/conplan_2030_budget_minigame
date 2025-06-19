@@ -171,11 +171,11 @@ export class GameScene extends Scene {
     }
 
     getCancelSessionButtonLocation() {
-        return [280, 20];
+        return [210, 20];
     }
 
     getCancelSessionButtonScale() {
-        return 1.0;
+        return Math.min(400, window.innerWidth) / 400;
     }
 
     receiveEvent(eventName, e) {

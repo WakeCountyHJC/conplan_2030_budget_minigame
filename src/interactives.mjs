@@ -524,7 +524,7 @@ export class CancelSessionButton extends Interactive {
 
                 this.graphic.addChild(icon);
                 this.graphic.addChild(new Text({
-                    text: 'Cancel Session',
+                    text: 'Cancel\nSession',
                     style: {
                         fill: '#000000',
                         fontSize: '25px',
@@ -548,6 +548,7 @@ export class CancelSessionButton extends Interactive {
                 this.graphic.on('pointertap', (e) => {
                     sceneContainer.sendEvent('cancelUserSession');
                 });
+                this.graphic.pivot.set(-iconBounds.width / 2, 0);
             }
         );
     }
