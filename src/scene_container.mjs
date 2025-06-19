@@ -9,7 +9,9 @@ class SceneContainer {
         this.app.init({
             resizeTo: window,
             background: '#9999FF',
-            antialias: true
+            antialias: true,
+            autoDensity: true,
+            resolution: window.devicePixelRatio,
         }).then(() => {
             document.body.appendChild(this.app.canvas);
             this.app.stage.eventMode = 'static';

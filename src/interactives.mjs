@@ -103,10 +103,10 @@ export class Bucket extends Interactive {
                 fill: '#000000',
                 stroke: {
                     color: '#ffffff',
-                    width: 2,
+                    width: 8,
                 },
                 align: 'center',
-                fontSize: '24px',
+                fontSize: '32px',
             },
             anchor: 0.5,
             position: {
@@ -120,7 +120,7 @@ export class Bucket extends Interactive {
                 fill: '#000000',
                 fontWeight: 'bold',
                 align: 'center',
-                fontSize: '24px',
+                fontSize: '32px',
             },
             anchor: 0.5,
             position: {
