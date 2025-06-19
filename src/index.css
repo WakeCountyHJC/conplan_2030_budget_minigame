@@ -130,6 +130,7 @@ p {
     background-color: #aae;
     font-family: Trocchi, serif;
     cursor: pointer;
+    color: #000;
 }
 
 .modal__start-btn--smaller {
